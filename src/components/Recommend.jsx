@@ -71,7 +71,9 @@ const Recommend = () => {
         {/* Step 1: Welcome */}
         <Step>
           <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold text-cyan-400">Welcome! 👋</h1>
+            <h1 className="220:text-2xl 440:text-3xl font-bold text-cyan-400">
+              Welcome! 👋
+            </h1>
             <p className="text-gray-400 text-[18px]">
               I am excited to hear your thoughts. This will only take a moment.
             </p>

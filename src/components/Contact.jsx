@@ -396,7 +396,12 @@ const ContactSection = () => {
                   </div>
                 </motion.div>
               </div>
-              <input type="hidden" name="service" value={selectedService} />
+              <input
+                type="hidden"
+                required
+                name="service"
+                value={selectedService}
+              />
             </div>
             {/* Message Input */}
             <div data-aos="zoom-in" data-aos-delay="300">
@@ -437,7 +442,7 @@ const ContactSection = () => {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <div className="flex gap-2 items-center">
-                  <VscCheckAll className="text-blue-400 text-xl group-hover:-rotate-45" />
+                  <VscCheckAll className="text-blue-400 text-xl" />
                   Message sent successfully!
                 </div>
               </motion.div>

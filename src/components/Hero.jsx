@@ -30,7 +30,10 @@ const HeroSection = () => {
         <motion.div className="flex flex-col items-center">
           {/* Profile Image with Animated Border and Box-Shadow */}
 
-          <div data-aos="zoom-in" className="flex items-center justify-center ">
+          <div
+            data-aos="zoom-in"
+            className="flex m-5 items-center justify-center "
+          >
             <div
               className="relative h-52 w-52 rounded-full"
               onMouseMove={handleMouseMove}
@@ -40,7 +43,7 @@ const HeroSection = () => {
               <div className="absolute -inset-1 rounded-full animate-rotate bg-[conic-gradient(#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8,#ff0000)]" />
 
               {/* Glowing effect */}
-              <div className="absolute -inset-2 rounded-full animate-pulse bg-[conic-gradient(#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8,#ff0000)] opacity-50 blur-xl" />
+              <div className="absolute -inset-1 rounded-full animate-pulse bg-[conic-gradient(#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8,#ff0000)] opacity-20 blur-xl" />
 
               {/* Image container */}
               <div
@@ -60,7 +63,7 @@ const HeroSection = () => {
 
           {/* About Me Section */}
           <motion.div
-            className="mt-4 max-w-2xl mx-auto"
+            className="my-4 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -77,7 +80,7 @@ const HeroSection = () => {
             </div>
             <p
               data-aos="fade-up"
-              className="text-xl md:text-2xl text-gray-300 mb-4"
+              className="text-xl md:text-2xl text-gray-300 mb-3"
             >
               Frontend developer specializing in modern web technologies.{" "}
               {/* Replace with your bio */}
