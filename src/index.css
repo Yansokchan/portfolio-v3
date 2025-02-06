@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optional: Add smooth scroll for specific elements */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+.animated-gradient {
+  background: linear-gradient(
+    90deg,
+    #030014,
+    /* slate-900 */ #0d032b,
+    /* blue-900 */ #160025,
+    /* blue-800 */ #03021f /* blue-500 */
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+:root {
+  --scroll: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: radial-gradient(
+    ellipse at 50% calc(100% - (var(--scroll) * 100%)),
+    rgba(14, 144, 231, 0.2) 0%,
+    transparent 100%
+  );
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(13, 219, 219);
+  border-radius: 4px;
+}
+/* Fade-in image animation */
+@keyframes imageFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+img {
+  animation: imageFadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+.form-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input::placeholder {
+  opacity: 0;
+}
+
+.form-input:focus + label,
+.form-input:not(:placeholder-shown) + label {
+  transform: translateY(-24px) scale(0.9);
+  opacity: 1;
+}
+
+.success-message {
+  backdrop-filter: blur(12px);
+}
+/* Smooth transitions for all elements */
+* {
+  transition: all 0.3s ease;
+}
+
+/* Glow effect on hover */
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* Pulse animation for buttons */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse:hover {
+  animation: pulse 1.5s infinite;
+}
+@keyframes aurora {
+  0% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  25% {
+    transform: rotate(15deg) translate(-5%, 5%);
+  }
+  50% {
+    transform: rotate(0deg) translate(-10%, 10%);
+  }
+  75% {
+    transform: rotate(-15deg) translate(5%, -5%);
+  }
+  100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+.animate-rotate {
+  animation: rotate 3s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 3s ease-in-out infinite;
+}
