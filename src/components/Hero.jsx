@@ -41,10 +41,6 @@ const HeroSection = () => {
             >
               {/* Rotating gradient border */}
               <div className="absolute -inset-1 rounded-full animate-rotate bg-[conic-gradient(#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8,#ff0000)]" />
-
-              {/* Glowing effect */}
-              <div className="absolute -inset-1 rounded-full animate-pulse bg-[conic-gradient(#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00c8,#ff0000)] opacity-20 blur-xl" />
-
               {/* Image container */}
               <div
                 className="relative h-full w-full rounded-full overflow-hidden transition-transform duration-300 hover:scale-105"
