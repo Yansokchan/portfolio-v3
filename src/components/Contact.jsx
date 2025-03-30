@@ -1,4 +1,7 @@
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { LinkedinIcon, InstagramIcon } from "./Socialicons";
 import {
   EnvelopeIcon,
   PhoneIcon,
@@ -8,15 +11,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { IoIosSend } from "react-icons/io";
 import { VscCheckAll } from "react-icons/vsc";
-import {
-  LinkedinIcon,
-  TelegramIcon,
-  InstagramIcon,
-} from "../components/SocialIcons";
-import { useState } from "react";
+
 const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+  const formRef = useRef();
   const [isServiceOpen, setIsServiceOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("web-development");
 
@@ -50,9 +49,9 @@ const ContactSection = () => {
 
       const result = await response.json();
       if (result.success) {
-        setSuccess(true);
+        setSubmitStatus("success");
         e.target.reset();
-        setTimeout(() => setSuccess(false), 5000);
+        setTimeout(() => setSubmitStatus(null), 5000);
       }
     } catch (error) {
       console.error(error);
@@ -144,7 +143,7 @@ const ContactSection = () => {
                         className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
                         whileHover={{ rotate: 15, scale: 1.1 }}
                       >
-                        <TelegramIcon className="h-6 w-6 text-blue-400" />
+                        <FaTwitter className="h-6 w-6 text-blue-400" />
                       </motion.div>
                       <div>
                         <h3 className="text-xl font-bold mb-1 text-white">
@@ -179,7 +178,7 @@ const ContactSection = () => {
                         className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
                         whileHover={{ rotate: 15, scale: 1.1 }}
                       >
-                        <LinkedinIcon className="h-6 w-6 text-blue-400" />
+                        <FaLinkedin className="h-6 w-6 text-blue-400" />
                       </motion.div>
                       <div>
                         <h3 className="text-xl font-bold mb-1 text-white">
@@ -435,7 +434,7 @@ const ContactSection = () => {
               </div>
             </motion.button>
             {/* Success Message */}
-            {success && (
+            {submitStatus === "success" && (
               <motion.div
                 className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-400 group"
                 initial={{ opacity: 0, y: 10 }}
