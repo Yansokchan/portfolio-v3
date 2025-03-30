@@ -420,7 +420,7 @@ const ContactSection = () => {
             {/* Submit Button with Pulsating Glow */}
             <motion.button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600/25 to-cyan-600/20 text-white px-8 py-3 rounded-lg relative overflow-hidden"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-lg relative overflow-hidden"
               disabled={isSubmitting}
               whileHover={{ scale: 1.015 }}
               whileTap={{ scale: 0.95 }}

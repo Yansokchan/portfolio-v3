@@ -8,6 +8,7 @@ import Projects from "./components/Projects.jsx";
 import Recommend from "./components/Recommend.jsx";
 import ScrollWrapper from "./components/ScrollWrapper.jsx";
 import Services from "./components/Services.jsx";
+import Comments from "./components/Comments.jsx";
 // import Squares from "./components/Backgrounds/Squares/Squares.jsx";
 function App() {
   return (
@@ -18,9 +19,10 @@ function App() {
       <Navbar />
       <Hero />
       <Projects />
+      <Comments />
+
       <Services />
       <Contact />
-      <Recommend />
       <Footer />
     </ScrollWrapper>
   );
