@@ -13,7 +13,7 @@ import Material from "./logo/Material.png";
 import react from "./logo/React.png";
 import sweet from "./logo/SweetAlert.png";
 import tailwind from "./logo/Tailwind.png";
-import vite from "./logo/vite.png";
+import vite from "./logo/Vite.png";
 const Skills = () => {
   const skills = [
     {
