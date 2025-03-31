@@ -6,4 +6,15 @@ export default defineConfig({
   plugins: [react()],
   base: "/",
   assetsInclude: ["**/*.glb"],
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name.endsWith(".glb")) {
+            return "assets/[name][extname]";
+          }
+        },
+      },
+    },
+  },
 });

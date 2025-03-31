@@ -13,7 +13,9 @@ import {
 import workModel from "../assets/work.glb";
 
 function Model({ isMobile }) {
-  const { scene, animations } = useGLTF(workModel);
+  const { scene, animations } = useGLTF(workModel, undefined, (error) => {
+    console.error("Error loading model:", error);
+  });
   const { actions } = useAnimations(animations, scene);
 
   useEffect(() => {
@@ -26,10 +28,35 @@ function Model({ isMobile }) {
   return (
     <primitive
       object={scene}
-      scale={isMobile ? [0.5, 0.5, 0.5] : [0.2, 0.2, 0.2]}
-      position={isMobile ? [0, 0, 1] : [0, 0, 1]}
+      scale={isMobile ? [0.35, 0.35, 0.35] : [0.25, 0.25, 0.25]}
+      position={[0, 0, 1]}
     />
   );
+}
+
+// Add error boundary for the Canvas
+function ErrorBoundary({ children }) {
+  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const handleError = (event) => {
+      console.error("Canvas error:", event);
+      setError(event);
+      setHasError(true);
+    };
+
+    window.addEventListener("error", handleError);
+    return () => window.removeEventListener("error", handleError);
+  }, []);
+
+  if (hasError) {
+    return (
+      <div>Error loading 3D model. Please check the console for details.</div>
+    );
+  }
+
+  return children;
 }
 
 const HeroSection = () => {
@@ -110,40 +137,39 @@ const HeroSection = () => {
           </div>
 
           {/* Right Side - 3D Model */}
-          <div className="flex-1 w-full aspect-[4/3] sm:aspect-[4/3] md:aspect-[4/3] lg:aspect-[4/3]">
-            <Canvas
-              camera={{
-                position: isMobile ? [0, 20, 17] : [0, 2, 9],
-                fov: isMobile ? 18 : 25,
-              }}
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                display: "block",
-              }}
-              gl={{
-                antialias: true,
-                alpha: true,
-                powerPreference: "high-performance",
-              }}
-            >
-              <ambientLight intensity={0.5} />
-              <directionalLight position={[10, 10, 5]} intensity={1} />
-              <Model isMobile={isMobile} />
-              <OrbitControls
-                enableZoom={false}
-                minPolarAngle={Math.PI / 2.5}
-                maxPolarAngle={Math.PI / 1.5}
-                enableDamping={true}
-                dampingFactor={0.03}
-                rotateSpeed={0.5}
-                panSpeed={0.5}
-                target={[0, 0, 0]}
-                makeDefault
-              />
-              <Environment preset="city" />
-            </Canvas>
+          <div className="flex-1 w-full aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/4] lg:aspect-[3/4]">
+            <ErrorBoundary>
+              <Canvas
+                camera={{ position: [0, 20, 9], fov: 30 }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                  display: "block",
+                }}
+                gl={{
+                  antialias: true,
+                  alpha: true,
+                  powerPreference: "high-performance",
+                }}
+              >
+                <ambientLight intensity={0.5} />
+                <directionalLight position={[10, 10, 5]} intensity={1} />
+                <Model isMobile={isMobile} />
+                <OrbitControls
+                  enableZoom={false}
+                  minPolarAngle={Math.PI / 2.5}
+                  maxPolarAngle={Math.PI / 1.5}
+                  enableDamping={true}
+                  dampingFactor={0.03}
+                  rotateSpeed={0.5}
+                  panSpeed={0.5}
+                  target={[0, 0, 0]}
+                  makeDefault
+                />
+                <Environment preset="city" />
+              </Canvas>
+            </ErrorBoundary>
           </div>
         </motion.div>
       </div>
