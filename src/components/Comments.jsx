@@ -9,6 +9,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { MdCloudUpload } from "react-icons/md";
+import AnimatedList from "./AnimatedList";
 
 // Initialize Supabase client
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -137,6 +138,52 @@ const SuccessAlert = ({ message, onClose }) => {
   );
 };
 
+const CommentItem = ({ comment }) => {
+  return (
+    <div className="bg-white/5 mr-1 rounded-lg p-3 sm:p-6 hover:bg-white/10 transition-all duration-300 relative overflow-hidden group cursor-pointer">
+      {/* Hover effect overlay */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        initial={false}
+        whileHover={{
+          opacity: 1,
+          transition: { duration: 0.1 },
+        }}
+      />
+
+      <div className="flex items-start space-x-3 sm:space-x-6 relative">
+        <div className="flex-shrink-0">
+          {comment.profile_image ? (
+            <img
+              src={comment.profile_image}
+              alt={comment.name}
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-blue-500 shadow-lg"
+            />
+          ) : (
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl sm:text-2xl font-bold border-2 border-blue-500 shadow-lg">
+              {comment.name.charAt(0)}
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start sm:gap-0">
+            <h3 className="text-lg sm:text-xl font-bold text-white truncate">
+              {comment.name}
+            </h3>
+            <div className="flex items-center text-white/50 text-[10px] -mt-1 sm:text-sm">
+              <FaClock className="mr-1" />
+              {formatTimeAgo(comment.created_at)}
+            </div>
+          </div>
+          <p className="text-white/80 mt-1 sm:mt-2 text-sm sm:text-lg break-words">
+            {comment.comment}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Comments = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState({
@@ -255,7 +302,7 @@ const Comments = () => {
           damping: 25,
           stiffness: 100,
         }}
-        className="space-y-4 sm:space-y-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-lg border-2 border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-300"
+        className="max-w-2xl mx-auto space-y-4 sm:space-y-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-lg border-2 border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-300"
       >
         <motion.div
           className="flex items-center justify-center gap-2 mb-4 sm:mb-8"
@@ -263,8 +310,8 @@ const Comments = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <FaComments className="text-2xl sm:text-3xl text-blue-500" />
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">
+          <FaComments className="text-2xl sm:text-3xl text-cyan-400" />
+          <h2 className="text-2xl text-cyan-400 font-bold text-center">
             Comments
           </h2>
         </motion.div>
@@ -345,101 +392,18 @@ const Comments = () => {
           </div>
         </motion.form>
 
-        {/* Comments List */}
-        <motion.div
-          className="space-y-4 sm:space-y-6 max-h-[400px] sm:max-h-[600px] overflow-y-auto pr-2 sm:pr-4 custom-scrollbar"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          {comments.map((comment, index) => (
-            <motion.div
-              key={comment.id}
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{
-                duration: 0.5,
-                delay: index * 0.1,
-                type: "spring",
-                damping: 20,
-                stiffness: 200,
-              }}
-              className="bg-white/5 rounded-lg p-3 sm:p-6 hover:bg-white/10 transition-all duration-300 relative overflow-hidden group cursor-pointer"
-            >
-              {/* Hover effect overlay */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                initial={false}
-                whileHover={{
-                  opacity: 1,
-                  transition: { duration: 0.2 },
-                }}
-              />
-
-              <div className="flex items-start space-x-3 sm:space-x-6 relative">
-                <motion.div
-                  className="flex-shrink-0"
-                  whileHover={{
-                    scale: 1.1,
-                    rotate: 5,
-                    transition: {
-                      type: "spring",
-                      damping: 15,
-                      stiffness: 200,
-                    },
-                  }}
-                >
-                  {comment.profile_image ? (
-                    <img
-                      src={comment.profile_image}
-                      alt={comment.name}
-                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-blue-500 shadow-lg"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl sm:text-2xl font-bold border-2 border-blue-500 shadow-lg">
-                      {comment.name.charAt(0)}
-                    </div>
-                  )}
-                </motion.div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-0">
-                    <motion.h3
-                      className="text-lg sm:text-xl font-bold text-white truncate"
-                      whileHover={{
-                        x: 5,
-                        color: "#60A5FA",
-                        transition: { duration: 0.2 },
-                      }}
-                    >
-                      {comment.name}
-                    </motion.h3>
-                    <motion.div
-                      className="flex items-center text-white/50 text-xs sm:text-sm"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <FaClock className="mr-1" />
-                      {formatTimeAgo(comment.created_at)}
-                    </motion.div>
-                  </div>
-                  <motion.p
-                    className="text-white/80 mt-1 sm:mt-2 text-sm sm:text-lg break-words"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    whileHover={{
-                      color: "#E5E7EB",
-                      transition: { duration: 0.2 },
-                    }}
-                  >
-                    {comment.comment}
-                  </motion.p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Comments List using AnimatedList */}
+        <div className="space-y-4 sm:space-y-6">
+          <AnimatedList
+            items={comments.map((comment) => (
+              <CommentItem key={comment.id} comment={comment} />
+            ))}
+            className="w-full"
+            displayScrollbar={true}
+            showGradients={true}
+            enableArrowNavigation={false}
+          />
+        </div>
       </motion.div>
 
       <AnimatePresence mode="wait">

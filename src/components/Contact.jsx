@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
-import { motion } from "framer-motion";
-import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaGithub, FaLinkedin, FaTelegram } from "react-icons/fa";
 import { LinkedinIcon, InstagramIcon } from "./Socialicons";
 import {
   EnvelopeIcon,
@@ -11,6 +11,179 @@ import {
 } from "@heroicons/react/24/outline";
 import { IoIosSend } from "react-icons/io";
 import { VscCheckAll } from "react-icons/vsc";
+import { FaCheckCircle, FaTimes } from "react-icons/fa";
+import { useMotionValue, useTransform, useSpring } from "framer-motion";
+
+const SuccessAlert = ({ message, onClose }) => {
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const duration = 3000; // 3 seconds
+    const interval = 10; // Update every 10ms
+    const steps = duration / interval;
+    const decrement = 100 / steps;
+
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev <= 0) {
+          clearInterval(timer);
+          onClose();
+          return 0;
+        }
+        return prev - decrement;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 50, scale: 0.95 }}
+      transition={{
+        type: "spring",
+        damping: 25,
+        stiffness: 200,
+        mass: 0.8,
+      }}
+      className="fixed bottom-4 right-4 bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 min-w-[300px] max-w-[400px] overflow-hidden border border-white/10 backdrop-blur-sm"
+    >
+      <div className="relative">
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{
+            type: "spring",
+            damping: 15,
+            stiffness: 200,
+            mass: 0.8,
+          }}
+          className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+        >
+          <FaCheckCircle className="text-xl" />
+        </motion.div>
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{
+            delay: 0.2,
+            type: "spring",
+            damping: 15,
+            stiffness: 200,
+            mass: 0.8,
+          }}
+          className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center"
+        >
+          <FaCheckCircle className="text-xs text-blue-500" />
+        </motion.div>
+      </div>
+
+      <div className="flex-1">
+        <motion.p
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            delay: 0.1,
+            type: "spring",
+            damping: 20,
+            stiffness: 200,
+          }}
+          className="font-medium"
+        >
+          {message}
+        </motion.p>
+        <motion.div
+          initial={{ scaleX: 1 }}
+          animate={{ scaleX: progress / 100 }}
+          transition={{ duration: 0.1, ease: "linear" }}
+          className="absolute bottom-0 left-0 right-0 h-1 bg-white/30"
+        />
+      </div>
+
+      <motion.button
+        whileHover={{ scale: 1.1, rotate: 90 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onClose}
+        className="text-white/70 hover:text-white transition-colors"
+      >
+        <FaTimes />
+      </motion.button>
+    </motion.div>
+  );
+};
+
+const ContactCard = ({
+  icon: Icon,
+  title,
+  children,
+  gradientColors,
+  iconColor,
+}) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const rotateX = useTransform(y, [-100, 100], [10, -10]);
+  const rotateY = useTransform(x, [-100, 100], [-10, 10]);
+
+  const springConfig = { damping: 25, stiffness: 150 };
+  const springRotateX = useSpring(rotateX, springConfig);
+  const springRotateY = useSpring(rotateY, springConfig);
+
+  const handleMouseMove = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    x.set(event.clientX - centerX);
+    y.set(event.clientY - centerY);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      className="517:p-6 220:p-3 rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 relative overflow-hidden group"
+      style={{
+        perspective: 1000,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      whileHover={{ scale: 1.02 }}
+    >
+      {/* Color blend animation */}
+      <motion.div
+        className={`absolute inset-0 bg-gradient-to-r ${gradientColors} opacity-0 group-hover:opacity-100 transition-opacity`}
+        style={{ transform: "translateZ(0)" }}
+      />
+
+      <motion.div
+        className="flex items-center gap-4 relative z-10"
+        style={{
+          rotateX: springRotateX,
+          rotateY: springRotateY,
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <motion.div
+          className="p-3 rounded-full bg-blue-500/10"
+          style={{ transform: "translateZ(30px)" }}
+        >
+          <Icon className={`h-6 w-6 ${iconColor}`} />
+        </motion.div>
+        <motion.div style={{ transform: "translateZ(20px)" }}>
+          <h3 className="text-xl font-bold mb-1 text-white">{title}</h3>
+          {children}
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,202 +266,100 @@ const ContactSection = () => {
               >
                 Connect With ME
               </h1>
-              <motion.div
-                className="517:p-6 220:p-3 rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 relative overflow-hidden group "
-                whileHover={{ scale: 1.02 }}
+
+              <ContactCard
+                icon={EnvelopeIcon}
+                title="Direct Email"
+                gradientColors="from-blue-600/10 via-red-500/15 to-yellow-600/10"
+                iconColor="text-cyan-500"
                 data-aos="zoom-out"
               >
-                {/* Color blend animation */}
-                <motion.div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-red-500/15 to-yellow-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a
+                  href="mailto:yansokchan05@gmail.com?subject=Portfolio Inquiry&body=Hello, I came across your portfolio and would like to discuss a project."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-blue-400 transition-colors flex 474:flex-row 220:flex-col 220:items-start items-center gap-2"
+                >
+                  <span className="text-cyan-400">click here.</span>
+                </a>
+              </ContactCard>
 
-                <div className="flex items-center gap-4 relative z-10">
-                  <motion.div
-                    className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
-                    whileHover={{ rotate: 15, scale: 1.1 }}
-                  >
-                    <EnvelopeIcon className="h-6 w-6 text-cyan-500" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-1 text-white">
-                      Direct Email
-                    </h3>
-
-                    <a
-                      href="mailto:yansokchan05@gmail.com?subject=Portfolio Inquiry&body=Hello, I came across your portfolio and would like to discuss a project."
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-300 hover:text-blue-400 transition-colors flex 474:flex-row 220:flex-col 220:items-start items-center gap-2"
-                    >
-                      <span className="text-cyan-400">click here.</span>
-                      <ArrowTopRightOnSquareIcon className="517:h-6 517:w-6 220:h-5 220:w-5 text-blue-400 absolute 517:-top-3 220:-top-1 517:-right-1 220:-right-0 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all" />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
               <div className="grid 517:space-y-0 gap-x-5 517:grid-cols-2 220:grid-cols-1 220:space-y-4">
                 <a
                   data-aos="zoom-out"
                   href="https://t.me/YanSokchan"
                   target="_blank"
                 >
-                  <motion.div
-                    className="517:p-6 220:p-3 rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 relative overflow-hidden group "
-                    whileHover={{ scale: 1.02 }}
+                  <ContactCard
+                    icon={FaTelegram}
+                    title="Telegram"
+                    gradientColors="from-blue-500/15 to-cyan-600/20"
+                    iconColor="text-blue-400"
                   >
-                    {/* Color blend animation */}
-                    <motion.div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 to-cyan-600/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                    <div className="flex items-center gap-4 relative z-10">
-                      <motion.div
-                        className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
-                        whileHover={{ rotate: 15, scale: 1.1 }}
-                      >
-                        <FaTwitter className="h-6 w-6 text-blue-400" />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-1 text-white">
-                          Telegram
-                        </h3>
-
-                        <div
-                          rel="noopener noreferrer"
-                          className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2"
-                        >
-                          Sokchan Yan
-                          <ArrowTopRightOnSquareIcon className="517:h-6 517:w-6 220:h-5 220:w-5 text-blue-400 absolute 517:-top-3 220:-top-1 517:-right-1 220:-right-0 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all" />
-                        </div>
-                      </div>
+                    <div className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2">
+                      Sokchan Yan
                     </div>
-                  </motion.div>
+                  </ContactCard>
                 </a>
+
                 <a
                   data-aos="zoom-out"
                   href="https://www.linkedin.com/in/sokchan-yan-74277b335?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
                   target="_blank"
                 >
-                  <motion.div
-                    className="517:p-6 220:p-3 rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 relative overflow-hidden group "
-                    whileHover={{ scale: 1.02 }}
+                  <ContactCard
+                    icon={FaLinkedin}
+                    title="LinkedIn"
+                    gradientColors="from-cyan-500/20 to-gray-500/10"
+                    iconColor="text-blue-400"
                   >
-                    {/* Color blend animation */}
-                    <motion.div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-gray-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                    <div className="flex items-center gap-4 relative z-10">
-                      <motion.div
-                        className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
-                        whileHover={{ rotate: 15, scale: 1.1 }}
-                      >
-                        <FaLinkedin className="h-6 w-6 text-blue-400" />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-1 text-white">
-                          LinkedIn
-                        </h3>
-
-                        <div
-                          rel="noopener noreferrer"
-                          className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2"
-                        >
-                          Sokchan Yan
-                          <ArrowTopRightOnSquareIcon className="517:h-6 517:w-6 220:h-5 220:w-5 text-blue-400 absolute 517:-top-3 220:-top-1 220:-right-0 517:-right-1 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all" />
-                        </div>
-                      </div>
+                    <div className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2">
+                      Sokchan Yan
                     </div>
-                  </motion.div>
+                  </ContactCard>
                 </a>
               </div>
-              <motion.div
+
+              <ContactCard
+                icon={InstagramIcon}
+                title="Instagram"
+                gradientColors="from-red-500/15 via-yellow-200/15 to-purple-500/15"
+                iconColor="text-red-400"
                 data-aos="zoom-out"
-                className="517:p-6 220:p-3 rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 relative overflow-hidden group "
-                whileHover={{ scale: 1.02 }}
               >
-                {/* Color blend animation */}
-                <motion.div className="absolute inset-0 bg-gradient-to-r from-red-500/15 via-yellow-200/15 to-purple-500/15 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a
+                  href="https://www.instagram.com/ouknhachan?igsh=cXoyenZrd2hhdnI4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  TO NG <span className="text-cyan-400">click here.</span>
+                </a>
+              </ContactCard>
 
-                <div className="flex items-center gap-4 relative z-10">
-                  <motion.div
-                    className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
-                    whileHover={{ rotate: 15, scale: 1.1 }}
-                  >
-                    <InstagramIcon className="h-6 w-6 text-red-400" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-1 text-white">
-                      Instagram
-                    </h3>
-
-                    <a
-                      href="https://www.instagram.com/ouknhachan?igsh=cXoyenZrd2hhdnI4"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2"
-                    >
-                      TO NG <span className="text-cyan-400">click here.</span>
-                      <ArrowTopRightOnSquareIcon className="517:h-6 517:w-6 220:h-5 220:w-5 text-blue-400 absolute 517:-top-3 220:-top-1 220:-right-0 517:-right-1 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all" />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
+              <ContactCard
+                icon={PhoneIcon}
+                title="Phone"
+                gradientColors="from-green-500/15 to-cyan-500/15"
+                iconColor="text-green-500"
                 data-aos="zoom-out"
-                className="517:p-6 220:p-3 rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 relative overflow-hidden group "
-                whileHover={{ scale: 1.02 }}
               >
-                {/* Color blend animation */}
-                <motion.div className="absolute inset-0 bg-gradient-to-r from-green-500/15 to-cyan-500/15 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                <div className="flex items-center gap-4 relative z-10">
-                  <motion.div
-                    className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
-                    whileHover={{ rotate: 15, scale: 1.1 }}
-                  >
-                    <PhoneIcon className="h-6 w-6 text-green-500" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-1 text-white">Phone</h3>
-
-                    <a
-                      rel="noopener noreferrer"
-                      className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2"
-                    >
-                      +855 | 97 5948 051
-                      <ArrowTopRightOnSquareIcon className="517:h-6 517:w-6 220:h-5 220:w-5 text-blue-400 absolute 517:-top-3 220:-top-1 220:-right-0 517:-right-1 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all" />
-                    </a>
-                  </div>
+                <div className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2">
+                  +855 | 97 5948 051
                 </div>
-              </motion.div>
+              </ContactCard>
 
-              <motion.div
+              <ContactCard
+                icon={MapPinIcon}
+                title="Location"
+                gradientColors="from-cyan-600/15 to-red-500/10"
+                iconColor="text-blue-600"
                 data-aos="zoom-out"
-                className="517:p-6 220:p-3 rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 relative overflow-hidden group "
-                whileHover={{ scale: 1.02 }}
               >
-                {/* Color blend animation */}
-                <motion.div className="absolute inset-0 bg-gradient-to-r from-cyan-600/15 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                <div className="flex items-center gap-4 relative z-10">
-                  <motion.div
-                    className="p-3 rounded-full bg-blue-500/10 backdrop-blur-lg"
-                    whileHover={{ rotate: 15, scale: 1.1 }}
-                  >
-                    <MapPinIcon className="h-6 w-6 text-blue-600" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-1 text-white">
-                      Location
-                    </h3>
-
-                    <a
-                      rel="noopener noreferrer"
-                      className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2"
-                    >
-                      Khan Chbar Ampov, Phnom Penh, Cambodia.
-                      <ArrowTopRightOnSquareIcon className="517:h-6 517:w-6 220:h-5 220:w-5 text-blue-400 absolute 517:-top-3 220:-top-1 220:-right-0 517:-right-1 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all" />
-                    </a>
-                  </div>
+                <div className="text-gray-300 hover:text-blue-400 transition-colors flex items-center gap-2">
+                  Khan Chbar Ampov, Phnom Penh, Cambodia.
                 </div>
-              </motion.div>
+              </ContactCard>
             </motion.div>
           </div>
 
@@ -433,22 +504,18 @@ const ContactSection = () => {
                 </span>
               </div>
             </motion.button>
-            {/* Success Message */}
-            {submitStatus === "success" && (
-              <motion.div
-                className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-400 group"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div className="flex gap-2 items-center">
-                  <VscCheckAll className="text-blue-400 text-xl" />
-                  Message sent successfully!
-                </div>
-              </motion.div>
-            )}
           </motion.form>
         </div>
       </div>
+
+      <AnimatePresence mode="wait">
+        {submitStatus === "success" && (
+          <SuccessAlert
+            message="Message sent successfully!"
+            onClose={() => setSubmitStatus(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };

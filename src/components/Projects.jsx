@@ -1,9 +1,113 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import projects from "./data/projects.js";
 import { useState } from "react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import Skills from "./Skills.jsx";
 import { FaProjectDiagram, FaTools, FaCode } from "react-icons/fa";
+
+const ProjectCard = ({ project }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // Subtle rotation values
+  const rotateX = useTransform(y, [-100, 100], [10, -10]);
+  const rotateY = useTransform(x, [-100, 100], [-10, 10]);
+
+  // Smooth spring animation
+  const springConfig = { damping: 25, stiffness: 150 };
+  const springRotateX = useSpring(rotateX, springConfig);
+  const springRotateY = useSpring(rotateY, springConfig);
+
+  const handleMouseMove = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    x.set(event.clientX - centerX);
+    y.set(event.clientY - centerY);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      className="group relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 hover:border-blue-500/30 hover:border transition-all"
+      style={{
+        perspective: 1000,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Project Image */}
+      <motion.div
+        className="relative h-64 overflow-hidden"
+        style={{
+          rotateX: springRotateX,
+          rotateY: springRotateY,
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <motion.img
+          src={project.image}
+          alt={project.title}
+          className="w-full h-full object-cover"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
+          style={{ transform: "translateZ(20px)" }}
+        />
+      </motion.div>
+
+      {/* Project Content */}
+      <motion.div
+        className="p-4 relative z-10"
+        style={{
+          rotateX: springRotateX,
+          rotateY: springRotateY,
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <motion.h3
+          className="text-xl text-cyan-400 font-bold mb-2"
+          style={{ transform: "translateZ(30px)" }}
+        >
+          {project.title}
+        </motion.h3>
+        <motion.p
+          className="text-gray-300 mb-4"
+          style={{ transform: "translateZ(20px)" }}
+        >
+          {project.description}
+        </motion.p>
+        <motion.a
+          target="blank"
+          href={project.link}
+          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 group"
+          whileHover={{ x: 5 }}
+          style={{ transform: "translateZ(30px)" }}
+        >
+          <span>Live Demo</span>
+          <ArrowTopRightOnSquareIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+        </motion.a>
+      </motion.div>
+
+      {/* Subtle hover effect overlay */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          transform: "translateZ(0)",
+        }}
+      />
+    </motion.div>
+  );
+};
+
 const Projects = () => {
   const [activeSection, setActiveSection] = useState("projects");
 
@@ -14,6 +118,7 @@ const Projects = () => {
     },
     tap: { scale: 0.95 },
   };
+
   return (
     <section id="portfolio" className="py-20 px-4 mx-5">
       <div className="container mx-auto">
@@ -51,7 +156,7 @@ const Projects = () => {
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   />
                 )}
-                <FaProjectDiagram className="text-lg" /> {/* Project Icon */}
+                <FaProjectDiagram className="text-lg" />
                 Projects
               </motion.button>
 
@@ -74,7 +179,7 @@ const Projects = () => {
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   />
                 )}
-                <FaTools className="text-lg" /> {/* Skills Icon */}
+                <FaTools className="text-lg" />
                 Tech Stack
               </motion.button>
             </div>
@@ -84,50 +189,11 @@ const Projects = () => {
       {activeSection === "projects" && (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project) => (
-            <motion.div
-              key={project.id}
-              className="group relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-lg border border-white/10 hover:border-blue-500/30 hover:border transition-all"
-              data-aos="flip-up"
-              data-aos-easing="ease-out-cubic"
-              data-aos-duration="1300"
-            >
-              {/* Project Image */}
-              <div className="relative h-64 overflow-hidden">
-                <motion.img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-
-              {/* Project Content */}
-              <div className="p-4">
-                <h3 className="text-xl text-cyan-400 font-bold mb-2">
-                  {project.title}
-                </h3>
-                <p className="text-gray-300 mb-4">{project.description}</p>
-                <motion.a
-                  target="blank"
-                  href={project.link}
-                  className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 group"
-                  whileHover={{ x: 5 }}
-                >
-                  <span>Live Demo</span>
-                  <ArrowTopRightOnSquareIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </motion.a>
-              </div>
-
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </motion.div>
+            <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       )}
       {activeSection === "skills" && <Skills />}
-      {/* Hover Glow Effect */}
     </section>
   );
 };
