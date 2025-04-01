@@ -10,9 +10,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name.endsWith(".glb")) {
-            return "assets/[name][extname]";
+          const info = assetInfo.name.split(".");
+          const ext = info[info.length - 1];
+          if (/\.(glb|png|jpe?g|gif|svg|webp|ico)$/.test(assetInfo.name)) {
+            return `assets/[name]-[hash][extname]`;
           }
+          return `assets/[name]-[hash][extname]`;
         },
       },
     },
