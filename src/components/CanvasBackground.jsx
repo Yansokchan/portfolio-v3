@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
+
 const CanvasBackground = () => {
-  // ... previous code ...
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -14,58 +14,113 @@ const CanvasBackground = () => {
       canvas.height = window.innerHeight;
     };
 
-    // Create shapes
-    class Shape {
+    // Create meteors
+    class Meteor {
       constructor() {
+        this.reset();
+      }
+
+      reset() {
         this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 50 + 10;
-        this.rotation = Math.random() * 360;
-        this.speed = Math.random() * 0.5 + 0.2;
+        this.y = -20;
+        this.length = Math.random() * 150 + 50; // Longer trails
+        this.speed = Math.random() * 1.5 + 1; // Slower speed
+        this.angle = Math.PI / 4 + (Math.random() * Math.PI) / 8; // Angle of the meteor
+        this.opacity = 1;
+        this.width = Math.random() * 1.5 + 1; // Width of the meteor trail
+        this.headSize = Math.random() * 0.5 + 1; // Bigger head size (3-7 pixels)
       }
 
       draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate((this.rotation * Math.PI) / 180);
-        ctx.strokeStyle = "rgba(255,255,255,0.1)";
-        ctx.lineWidth = 2;
-
-        // Draw hexagon
+        // Draw the meteor head
         ctx.beginPath();
-        for (let i = 0; i < 6; i++) {
-          const angle = (i * Math.PI) / 3;
-          ctx.lineTo(Math.cos(angle) * this.size, Math.sin(angle) * this.size);
-        }
-        ctx.closePath();
+        ctx.arc(this.x, this.y, this.headSize, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+        ctx.fill();
+
+        // Draw the trail
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity})`;
+        ctx.lineWidth = this.width;
+        ctx.lineCap = "round";
+
+        // Create gradient for the meteor trail
+        const gradient = ctx.createLinearGradient(
+          this.x,
+          this.y,
+          this.x - Math.cos(this.angle) * this.length,
+          this.y - Math.sin(this.angle) * this.length
+        );
+        gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+        gradient.addColorStop(0.2, "rgba(255, 255, 255, 0.6)");
+        gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+        ctx.strokeStyle = gradient;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(
+          this.x - Math.cos(this.angle) * this.length,
+          this.y - Math.sin(this.angle) * this.length
+        );
         ctx.stroke();
 
-        ctx.restore();
-        ctx.shadowColor = `hsla(${this.hue}, 70%, 50%, 0.5)`;
-        ctx.shadowBlur = 15;
-        ctx.lineWidth = 1.5;
+        // Add glow effect to the head
+        const glowGradient = ctx.createRadialGradient(
+          this.x,
+          this.y,
+          0,
+          this.x,
+          this.y,
+          this.headSize * 2
+        );
+        glowGradient.addColorStop(0, "rgba(255, 255, 255, 0.3)");
+        glowGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = glowGradient;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.headSize * 2, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       update() {
-        this.rotation += this.speed;
-        if (this.y > canvas.height + this.size) {
-          this.y = -this.size;
-          this.x = Math.random() * canvas.width;
-        } else {
-          this.y += this.speed;
+        // Move the meteor
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+
+        // Slower fade out
+        this.opacity -= 0.005;
+
+        // Reset meteor when it goes off screen or fades out
+        if (
+          this.y > canvas.height + 100 ||
+          this.x < -100 ||
+          this.x > canvas.width + 100 ||
+          this.opacity <= 0
+        ) {
+          this.reset();
         }
       }
     }
 
-    // Initialize animation
-    const shapes = Array.from({ length: 15 }, () => new Shape());
+    // Initialize meteors
+    const meteors = Array.from({ length: 10 }, () => new Meteor());
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      shapes.forEach((shape) => {
-        shape.update();
-        shape.draw();
+
+      // Draw gradient background
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, "#0f172a"); // slate-900
+      gradient.addColorStop(0.5, "#1e293b"); // slate-800
+      gradient.addColorStop(1, "#0c4a6e"); // cyan-900
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw and update meteors
+      meteors.forEach((meteor) => {
+        meteor.update();
+        meteor.draw();
       });
+
       animationFrameId = requestAnimationFrame(animate);
     };
 
@@ -83,38 +138,7 @@ const CanvasBackground = () => {
     };
   }, []);
 
-  class Shape {
-    constructor() {
-      // Add color properties
-      this.hue = Math.random() * 60 + 180; // Blue hues (180-240)
-      this.alpha = Math.random() * 0.2 + 0.1;
-    }
-
-    draw() {
-      // Modify stroke style
-      ctx.strokeStyle = `hsla(${this.hue}, 70%, 50%, ${this.alpha})`;
-
-      // Add fill effect
-      ctx.fillStyle = `hsla(${this.hue}, 70%, 50%, ${this.alpha * 0.3})`;
-      ctx.fill();
-
-      // Keep previous path drawing code
-    }
-
-    update() {
-      // Add color animation
-      this.hue += 0.3;
-      if (this.hue > 240) this.hue = 180;
-
-      // Keep previous movement logic
-    }
-  }
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed top-0 left-0 -z-10 bg-gradient-to-br from-gray-900 via-slate-900 to-cyan-900/30"
-    />
-  );
+  return <canvas ref={canvasRef} className="fixed top-0 left-0 -z-10" />;
 };
+
 export default CanvasBackground;

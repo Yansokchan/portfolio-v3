@@ -28,7 +28,7 @@ function Model({ isMobile }) {
   return (
     <primitive
       object={scene}
-      scale={isMobile ? [0.35, 0.35, 0.35] : [0.25, 0.25, 0.25]}
+      scale={isMobile ? [0.4, 0.4, 0.4] : [0.35, 0.35, 0.35]}
       position={[0, 0, 1]}
     />
   );
@@ -137,10 +137,10 @@ const HeroSection = () => {
           </div>
 
           {/* Right Side - 3D Model */}
-          <div className="flex-1 w-full aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/4] lg:aspect-[3/4]">
+          <div className="flex-1 w-full aspect-[4/3] sm:aspect-[4/3] md:aspect-[4/3] lg:aspect-[4/3]">
             <ErrorBoundary>
               <Canvas
-                camera={{ position: [0, 20, 9], fov: 30 }}
+                camera={{ position: [0, 12.8, 4], fov: 30 }}
                 style={{
                   width: "100%",
                   height: "100%",

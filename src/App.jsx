@@ -9,13 +9,14 @@ import Recommend from "./components/Recommend.jsx";
 import ScrollWrapper from "./components/ScrollWrapper.jsx";
 import Services from "./components/Services.jsx";
 import Comments from "./components/Comments.jsx";
-// import Squares from "./components/Backgrounds/Squares/Squares.jsx";
+import Squares from "./components/squares.jsx";
 function App() {
   return (
     <ScrollWrapper>
-      <Aurora />
+      {/* <Aurora /> */}
+      <Squares />
       <div className="fixed inset-0 -z-20 bg-slate-950" />
-      <CanvasBackground />
+      {/* <CanvasBackground /> */}
       <Navbar />
       <Hero />
       <Projects />
